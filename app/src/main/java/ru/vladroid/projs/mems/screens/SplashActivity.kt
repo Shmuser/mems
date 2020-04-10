@@ -1,9 +1,10 @@
-package ru.vladroid.projs.mems
+package ru.vladroid.projs.mems.screens
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ru.vladroid.projs.mems.R
 
-class MainActivity : AppCompatActivity() {
+class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
