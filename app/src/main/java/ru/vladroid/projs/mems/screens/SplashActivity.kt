@@ -22,6 +22,7 @@ class SplashActivity : AppCompatActivity() {
             override fun run() {
                 val authIntent = Intent(this@SplashActivity, AuthActivity::class.java)
                 startActivity(authIntent)
+                finish()
             }
         }, 300)
     }
