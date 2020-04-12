@@ -6,4 +6,5 @@
     <string name="empty_field_error">Поле не может быть пустым</string>
     <string name="auth_button_text">Войти</string>
     <string name="auth_error_message">Во время запроса произошла ошибка, возможно вы неверно ввели логин/пароль</string>
+    <string name="dummy">string</string>
 </resources>
