@@ -44,7 +44,7 @@ class AuthPresenterImpl(context: Context) : AuthPresenter {
             .subscribe({
                 sharedPrefsHelper.putAuthResponse(it)
                 authView?.hideAuthLoading()
-                authView?.onWrongAuthInfoError()
+                authView?.onAuthSuccess()
             }, {
                 authView?.hideAuthLoading()
                 authView?.onWrongAuthInfoError()
