@@ -11,7 +11,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppThemeWithoutBar)
+        setTheme(R.style.AppThemeDarkStatusBar)
         setContentView(R.layout.activity_splash)
     }
 
