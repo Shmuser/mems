@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Mems</string>
+    <string name="password_label">Пароль</string>
+    <string name="login_label">Логин</string>
+    <string name="password_helper_text">Пароль должен содержать %d символов</string>
+    <string name="empty_field_error">Поле не может быть пустым</string>
+    <string name="auth_button_text">Войти</string>
+    <string name="auth_error_message">Вы ввели неверные данные.\nПопробуйте ещё раз</string>
 </resources>
