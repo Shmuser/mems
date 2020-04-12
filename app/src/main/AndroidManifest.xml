@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppThemeWithBar">
+        <activity android:name=".screens.MemesMainActivity"></activity>
         <activity android:name=".screens.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".screens.AuthActivity"/>
+        <activity android:name=".screens.AuthActivity" />
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
 package ru.vladroid.projs.mems.network
 
-import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -11,10 +10,9 @@ import java.util.concurrent.TimeUnit
 class NetworkService {
     companion object {
         private const val baseUrl = "http://demo2407529.mockable.io/"
-        private val memesApiInstance: MemesApi = getRetrofit().create(MemesApi::class.java)
+        private var memesApiInstance: MemesApi? = null
 
         private fun getRetrofit(): Retrofit {
-            Log.d("wut", "agaga")
             return Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -34,6 +32,11 @@ class NetworkService {
                 .build()
         }
 
-        fun getApiInstance() = memesApiInstance
+        fun getApiInstance(): MemesApi {
+            if (memesApiInstance == null) {
+                memesApiInstance = getRetrofit().create(MemesApi::class.java)
+            }
+            return memesApiInstance!!
+        }
     }
 }

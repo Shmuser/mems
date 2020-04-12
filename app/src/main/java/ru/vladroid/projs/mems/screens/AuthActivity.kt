@@ -1,11 +1,11 @@
 package ru.vladroid.projs.mems.screens
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -16,12 +16,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import ru.vladroid.projs.mems.R
+import ru.vladroid.projs.mems.network.AuthInfo
+import ru.vladroid.projs.mems.presenters.AuthPresenter
+import ru.vladroid.projs.mems.presenters.AuthPresenterImpl
 import ru.vladroid.projs.mems.utils.AppConstants
+import ru.vladroid.projs.mems.views.AuthView
 import studio.carbonylgroup.textfieldboxes.ExtendedEditText
 import studio.carbonylgroup.textfieldboxes.TextFieldBoxes
-import java.util.*
 
-class AuthActivity : AppCompatActivity() {
+class AuthActivity : AppCompatActivity(), AuthView {
     private lateinit var constraintLayout: ConstraintLayout
     private lateinit var passwordBox: TextFieldBoxes
     private lateinit var loginBox: TextFieldBoxes
@@ -31,6 +34,8 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var emptyFieldErrorText: String
     private lateinit var progressBar: ProgressBar
     private lateinit var authButton: Button
+    private lateinit var authPresenter: AuthPresenter
+    private lateinit var authButtonText: CharSequence
     private var snackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +43,8 @@ class AuthActivity : AppCompatActivity() {
         setTheme(R.style.AppThemeWithoutBar)
         setContentView(R.layout.activity_auth)
 
+        authPresenter = AuthPresenterImpl(this)
+        authPresenter.attachView(this)
         constraintLayout = findViewById(R.id.constraint_layout)
         passwordBox = findViewById(R.id.password_field_boxes)
         loginBox = findViewById(R.id.login_field_boxes)
@@ -54,6 +61,11 @@ class AuthActivity : AppCompatActivity() {
         }
 
         configurePasswordInput()
+    }
+
+    override fun onDestroy() {
+        authPresenter.detachView()
+        super.onDestroy()
     }
 
     private fun configurePasswordInput() {
@@ -95,7 +107,7 @@ class AuthActivity : AppCompatActivity() {
                 }
             }
         })
-        passwordEditText.setOnFocusChangeListener { v, hasFocus ->
+        passwordEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && passwordEditText.text.length != 8) {
                 if (!passwordBox.isOnError)
                     setPasswordHelperText(helperText)
@@ -122,16 +134,8 @@ class AuthActivity : AppCompatActivity() {
     private fun authButtonClick() {
         if (!isInputCorrect())
             return
-        val buttonText = authButton.text
-        authButton.text = ""
-        progressBar.visibility = View.VISIBLE
-        val timer = Timer()
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                authButton.text = buttonText
-                progressBar.visibility = View.INVISIBLE
-            }
-        }, 2000)
+        val authInfo = AuthInfo(loginEditText.text.toString(), passwordEditText.text.toString())
+        authPresenter.onAuthButtonClick(authInfo)
     }
 
     private fun setPasswordHelperText(text: String) {
@@ -146,5 +150,25 @@ class AuthActivity : AppCompatActivity() {
                 .setTextColor(ContextCompat.getColor(this, R.color.colorText))
         }
         return snackbar!!
+    }
+
+    override fun onWrongAuthInfoError() {
+        getSnackbar(constraintLayout).show()
+    }
+
+    override fun onAuthSuccess() {
+        val memesIntent = Intent(this, MemesMainActivity::class.java)
+        startActivity(memesIntent)
+    }
+
+    override fun showAuthLoading() {
+        authButtonText = authButton.text
+        authButton.text = ""
+        progressBar.visibility = View.VISIBLE
+    }
+
+    override fun hideAuthLoading() {
+        authButton.text = authButtonText
+        progressBar.visibility = View.INVISIBLE
     }
 }
