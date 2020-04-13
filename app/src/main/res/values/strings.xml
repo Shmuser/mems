@@ -7,4 +7,8 @@
     <string name="auth_button_text">Войти</string>
     <string name="auth_error_message">Во время запроса произошла ошибка, возможно вы неверно ввели логин/пароль</string>
     <string name="dummy">string</string>
+    <string name="memes_list_title">Популярные мемы</string>
+    <string name="memes_search_text">Найти мемы</string>
+    <string name="memes_error_message_text">Не удалось загрузить ленту\nОбновите экран или попробуйте позже.</string>
+    <string name="memes_error_snackbar_text">Произошла ошибка</string>
 </resources>
