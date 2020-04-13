@@ -17,3 +17,12 @@ class UserInfo(
     val lastName: String,
     val userDescription: String
 )
+
+class Mem(
+    val id: Long,
+    val title: String,
+    val description: String,
+    val isFavorite: Boolean,
+    val createdDate: Long,
+    val photoUrl: String
+)
