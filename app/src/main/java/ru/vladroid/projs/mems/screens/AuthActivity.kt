@@ -6,7 +6,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -14,12 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.google.android.material.snackbar.Snackbar
 import ru.vladroid.projs.mems.R
-import ru.vladroid.projs.mems.network.AuthInfo
 import ru.vladroid.projs.mems.presenters.AuthPresenter
 import ru.vladroid.projs.mems.presenters.AuthPresenterImpl
 import ru.vladroid.projs.mems.utils.AppConstants
+import ru.vladroid.projs.mems.utils.showSnackbar
 import ru.vladroid.projs.mems.views.AuthView
 import studio.carbonylgroup.textfieldboxes.ExtendedEditText
 import studio.carbonylgroup.textfieldboxes.TextFieldBoxes
@@ -35,7 +33,6 @@ class AuthActivity : AppCompatActivity(), AuthView {
     private lateinit var progressBar: ProgressBar
     private lateinit var authButton: Button
     private lateinit var authPresenter: AuthPresenter
-    private var snackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +49,7 @@ class AuthActivity : AppCompatActivity(), AuthView {
     }
 
     override fun onWrongAuthInfoError() {
-        getSnackbar(constraintLayout).show()
+        constraintLayout.showSnackbar(R.string.auth_error_message)
     }
 
     override fun onAuthSuccess() {
@@ -82,7 +79,8 @@ class AuthActivity : AppCompatActivity(), AuthView {
         passwordEditText = findViewById(R.id.password_edit_text)
         loginEditText = findViewById(R.id.login_edit_text)
         progressBar = findViewById(R.id.progress_bar)
-        helperText = resources.getString(R.string.password_helper_text, AppConstants.PASSWORD_LENGTH)
+        helperText =
+            resources.getString(R.string.password_helper_text, AppConstants.PASSWORD_LENGTH)
         emptyFieldErrorText = resources.getString(R.string.empty_field_error)
         authButton = findViewById(R.id.auth_button)
     }
@@ -161,20 +159,14 @@ class AuthActivity : AppCompatActivity(), AuthView {
     private fun authButtonClick() {
         if (!isInputCorrect())
             return
-        authPresenter.onAuthButtonClick(loginEditText.text.toString(), passwordEditText.text.toString())
+        authPresenter.onAuthButtonClick(
+            loginEditText.text.toString(),
+            passwordEditText.text.toString()
+        )
     }
 
     private fun setPasswordHelperText(text: String) {
         if (passwordBox.helperText != text)
             passwordBox.helperText = text
-    }
-
-    private fun getSnackbar(view: View): Snackbar {
-        if (snackbar == null) {
-            snackbar = Snackbar.make(view, R.string.auth_error_message, Snackbar.LENGTH_LONG)
-                .setBackgroundTint(ContextCompat.getColor(this, R.color.colorError))
-                .setTextColor(ContextCompat.getColor(this, R.color.colorText))
-        }
-        return snackbar!!
     }
 }
