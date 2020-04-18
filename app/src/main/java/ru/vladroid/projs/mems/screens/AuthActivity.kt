@@ -35,36 +35,64 @@ class AuthActivity : AppCompatActivity(), AuthView {
     private lateinit var progressBar: ProgressBar
     private lateinit var authButton: Button
     private lateinit var authPresenter: AuthPresenter
-    private lateinit var authButtonText: CharSequence
     private var snackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
+        initPresenter()
+        initViews()
+        initListeners()
+    }
+
+    override fun onDestroy() {
+        authPresenter.detachView()
+        super.onDestroy()
+    }
+
+    override fun onWrongAuthInfoError() {
+        getSnackbar(constraintLayout).show()
+    }
+
+    override fun onAuthSuccess() {
+        val memesIntent = Intent(this, MemesMainActivity::class.java)
+        startActivity(memesIntent)
+    }
+
+    override fun showAuthLoading() {
+        authButton.text = ""
+        progressBar.isVisible = true
+    }
+
+    override fun hideAuthLoading() {
+        authButton.text = resources.getString(R.string.auth_button_text)
+        progressBar.isVisible = false
+    }
+
+    private fun initPresenter() {
         authPresenter = AuthPresenterImpl(this)
         authPresenter.attachView(this)
+    }
+
+    private fun initViews() {
         constraintLayout = findViewById(R.id.constraint_layout)
         passwordBox = findViewById(R.id.password_field_boxes)
         loginBox = findViewById(R.id.login_field_boxes)
         passwordEditText = findViewById(R.id.password_edit_text)
         loginEditText = findViewById(R.id.login_edit_text)
         progressBar = findViewById(R.id.progress_bar)
-        helperText = resources.getString(R.string.password_helper_text, AppConstants.passwordLength)
+        helperText = resources.getString(R.string.password_helper_text, AppConstants.PASSWORD_LENGTH)
         emptyFieldErrorText = resources.getString(R.string.empty_field_error)
         authButton = findViewById(R.id.auth_button)
+    }
 
+    private fun initListeners() {
         authButton.setOnClickListener {
             if (!progressBar.isVisible)
                 authButtonClick()
         }
-
         configurePasswordInput()
-    }
-
-    override fun onDestroy() {
-        authPresenter.detachView()
-        super.onDestroy()
     }
 
     private fun configurePasswordInput() {
@@ -99,7 +127,7 @@ class AuthActivity : AppCompatActivity(), AuthView {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s?.length != AppConstants.passwordLength) {
+                if (s?.length != AppConstants.PASSWORD_LENGTH) {
                     setPasswordHelperText(helperText)
                 } else {
                     setPasswordHelperText(" ")
@@ -107,7 +135,7 @@ class AuthActivity : AppCompatActivity(), AuthView {
             }
         })
         passwordEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && passwordEditText.text.length != 8) {
+            if (hasFocus && passwordEditText.text.length != AppConstants.PASSWORD_LENGTH) {
                 if (!passwordBox.isOnError)
                     setPasswordHelperText(helperText)
             } else {
@@ -133,8 +161,7 @@ class AuthActivity : AppCompatActivity(), AuthView {
     private fun authButtonClick() {
         if (!isInputCorrect())
             return
-        val authInfo = AuthInfo(loginEditText.text.toString(), passwordEditText.text.toString())
-        authPresenter.onAuthButtonClick(authInfo)
+        authPresenter.onAuthButtonClick(loginEditText.text.toString(), passwordEditText.text.toString())
     }
 
     private fun setPasswordHelperText(text: String) {
@@ -149,25 +176,5 @@ class AuthActivity : AppCompatActivity(), AuthView {
                 .setTextColor(ContextCompat.getColor(this, R.color.colorText))
         }
         return snackbar!!
-    }
-
-    override fun onWrongAuthInfoError() {
-        getSnackbar(constraintLayout).show()
-    }
-
-    override fun onAuthSuccess() {
-        val memesIntent = Intent(this, MemesMainActivity::class.java)
-        startActivity(memesIntent)
-    }
-
-    override fun showAuthLoading() {
-        authButtonText = authButton.text
-        authButton.text = ""
-        progressBar.visibility = View.VISIBLE
-    }
-
-    override fun hideAuthLoading() {
-        authButton.text = authButtonText
-        progressBar.visibility = View.INVISIBLE
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.vladroid.projs.mems.R
+import ru.vladroid.projs.mems.utils.AppConstants
 import java.util.*
 
 
@@ -24,6 +25,6 @@ class SplashActivity : AppCompatActivity() {
                 startActivity(authIntent)
                 finish()
             }
-        }, 300)
+        }, AppConstants.SPLASH_SCREEN_SHOW_TIME)
     }
 }

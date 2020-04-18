@@ -15,7 +15,7 @@ interface AuthPresenter {
 
     fun detachView()
 
-    fun onAuthButtonClick(authInfo: AuthInfo)
+    fun onAuthButtonClick(login: String, password: String)
 
 }
 
@@ -35,7 +35,8 @@ class AuthPresenterImpl(context: Context) : AuthPresenter {
         disposePrevRequest()
     }
 
-    override fun onAuthButtonClick(authInfo: AuthInfo) {
+    override fun onAuthButtonClick(login: String, password: String) {
+        val authInfo = AuthInfo(login, password)
         authView?.showAuthLoading()
         disposePrevRequest()
         disposableAuth = memesApi.login(authInfo)
