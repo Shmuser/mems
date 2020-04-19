@@ -9,4 +9,5 @@
     <color name="textBoxBackground">#0FFFFFFF</color>
     <color name="progressBarColor">#1F2032</color>
     <color name="bottomNavViewColor">#12102B</color>
+    <color name="colorTextSecondary">#CCFFFFFF</color>
 </resources>

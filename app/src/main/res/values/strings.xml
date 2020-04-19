@@ -11,4 +11,9 @@
     <string name="memes_search_text">Найти мемы</string>
     <string name="memes_error_message_text">Не удалось загрузить ленту\nОбновите экран или попробуйте позже.</string>
     <string name="memes_error_snackbar_text">Произошла ошибка</string>
+    <string name="date_today">Сегодня</string>
+    <string name="date_yesterday">Вчера</string>
+    <string name="date_many1">%d день назад</string>
+    <string name="date_many2">%d дня назад</string>
+    <string name="date_many3">%d дней назад</string>
 </resources>

@@ -1,5 +1,6 @@
 package ru.vladroid.projs.mems.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +14,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import ru.vladroid.projs.mems.R
 import ru.vladroid.projs.mems.network.Mem
+import ru.vladroid.projs.mems.screens.MemDetailsActivity
 import ru.vladroid.projs.mems.views.MemesMainView
 
 class MemesListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private val adapter = MemesListAdapter()
+    private val adapter = MemesListAdapter(object : MemesListAdapter.OnMemClickListener {
+        override fun onMemClick(mem: Mem) {
+            val intent = Intent(activity, MemDetailsActivity::class.java)
+            intent.putExtra(MemDetailsActivity.MEM_KEY, mem)
+            startActivity(intent)
+        }
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,7 +78,8 @@ class MemesListFragment : Fragment() {
 }
 
 
-class MemesListAdapter : RecyclerView.Adapter<MemesListAdapter.MemViewHolder>() {
+class MemesListAdapter(private val onMemClickListener: OnMemClickListener) :
+    RecyclerView.Adapter<MemesListAdapter.MemViewHolder>() {
     private var memes = ArrayList<Mem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemViewHolder {
@@ -84,7 +93,7 @@ class MemesListAdapter : RecyclerView.Adapter<MemesListAdapter.MemViewHolder>() 
     }
 
     override fun onBindViewHolder(holder: MemViewHolder, position: Int) {
-        holder.bind(memes[position])
+        holder.bind(memes[position], onMemClickListener)
     }
 
     fun setData(memes: ArrayList<Mem>) {
@@ -92,19 +101,28 @@ class MemesListAdapter : RecyclerView.Adapter<MemesListAdapter.MemViewHolder>() 
         notifyDataSetChanged()
     }
 
-    class MemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class MemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val title = view.findViewById<TextView>(R.id.mem_title)
         private val image = view.findViewById<ImageView>(R.id.mem_image)
         private val favButton = view.findViewById<ImageView>(R.id.mem_like)
 
-        fun bind(mem: Mem) {
+        fun bind(mem: Mem, onMemClickListener: OnMemClickListener) {
+            view.setOnClickListener {
+                onMemClickListener.onMemClick(mem)
+            }
             title.text = mem.title
-            Glide.with(image).load(mem.photoUrl)
+            Glide.with(image)
+                .load(mem.photoUrl)
+                .placeholder(R.drawable.mem_placeholder)
                 .into(image)
 
             favButton.setOnClickListener {
                 favButton.isSelected = !favButton.isSelected
             }
         }
+    }
+
+    interface OnMemClickListener {
+        fun onMemClick(mem: Mem)
     }
 }
