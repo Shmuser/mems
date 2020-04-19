@@ -9,12 +9,15 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import ru.vladroid.projs.mems.R
 import ru.vladroid.projs.mems.network.Mem
+import ru.vladroid.projs.mems.views.MemesMainView
 
 class MemesListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private val adapter = MemesListAdapter()
 
     override fun onCreateView(
@@ -27,16 +30,42 @@ class MemesListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViews(view)
+
+        configureSwipeRefreshLayout()
+        configureRecyclerView()
+    }
+
+    fun setMemes(memes: ArrayList<Mem>) {
+        adapter.setData(memes)
+    }
+
+    fun closeRefreshProgress() {
+        swipeRefreshLayout.isRefreshing = false
+    }
+
+    fun hideMemes() {
+        setMemes(arrayListOf())
+    }
+
+    private fun initViews(view: View) {
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
         recyclerView = view.findViewById(R.id.recycler_view)
+    }
+
+    private fun configureSwipeRefreshLayout() {
+        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.colorAccent)
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
+        swipeRefreshLayout.setOnRefreshListener {
+            (activity as MemesMainView).onReloadMemesList()
+        }
+    }
+
+    private fun configureRecyclerView() {
         val layoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
         layoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
-    }
-
-    fun setMemes(memes: ArrayList<Mem>) {
-        if (this.isVisible)
-            adapter.setData(memes)
     }
 }
 

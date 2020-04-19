@@ -64,18 +64,21 @@ class MemesMainActivity : AppCompatActivity(), MemesMainView {
         bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.action_news -> {
+                    hideErrorMessage()
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, fragments[0], memesListFragmentTag)
                         .commit()
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.action_add -> {
+                    hideErrorMessage()
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, fragments[1]).commit()
                     return@setOnNavigationItemSelectedListener true
 
                 }
                 R.id.action_profile -> {
+                    hideErrorMessage()
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, fragments[2]).commit()
                     return@setOnNavigationItemSelectedListener true
@@ -107,6 +110,23 @@ class MemesMainActivity : AppCompatActivity(), MemesMainView {
     override fun setMemesListData(memes: ArrayList<Mem>) {
         val memesListFragment = fragments[0] as MemesListFragment
         memesListFragment.setMemes(memes)
+    }
+
+    override fun onReloadMemesList() {
+        memesMainPresenter.reloadMemesList()
+    }
+
+    override fun hideReloadMemesListProgress() {
+        (fragments[0] as? MemesListFragment)?.closeRefreshProgress()
+    }
+
+    override fun onMemesReloadingError() {
+        (fragments[0] as? MemesListFragment)?.hideMemes()
+        onMemesLoadingError()
+    }
+
+    private fun hideErrorMessage() {
+        errorMessage.isVisible = false
     }
 
     private fun getErrorSnackbar(): Snackbar {

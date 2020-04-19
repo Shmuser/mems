@@ -11,4 +11,10 @@ interface MemesMainView {
     fun onMemesLoadingError()
 
     fun setMemesListData(memes: ArrayList<Mem>)
+
+    fun onReloadMemesList()
+
+    fun hideReloadMemesListProgress()
+
+    fun onMemesReloadingError()
 }

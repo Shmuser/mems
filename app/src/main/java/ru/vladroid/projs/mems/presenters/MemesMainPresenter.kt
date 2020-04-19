@@ -13,6 +13,8 @@ interface MemesMainPresenter {
     fun detachView()
 
     fun onFirstMemesLoading()
+
+    fun reloadMemesList()
 }
 
 
@@ -41,6 +43,21 @@ class MemesMainPresenterImpl : MemesMainPresenter {
                 }, {
                     memesMainView?.hideInitialLoading()
                     memesMainView?.onMemesLoadingError()
+                })
+        )
+    }
+
+    override fun reloadMemesList() {
+        disposables.addAll(
+            NetworkService.getApiInstance().getMemes()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    memesMainView?.hideReloadMemesListProgress()
+                    memesMainView?.setMemesListData(it)
+                }, {
+                    memesMainView?.hideReloadMemesListProgress()
+                    memesMainView?.onMemesReloadingError()
                 })
         )
     }
