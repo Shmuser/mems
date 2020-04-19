@@ -7,7 +7,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class NetworkService {
+class NetworkApiService {
     companion object {
         private const val baseUrl = "http://demo2407529.mockable.io/"
         private var memesApiInstance: MemesApi? = null
