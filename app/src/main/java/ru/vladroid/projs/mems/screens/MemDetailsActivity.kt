@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import com.mikhaellopez.circularimageview.CircularImageView
 import ru.vladroid.projs.mems.R
-import ru.vladroid.projs.mems.network.Mem
+import ru.vladroid.projs.mems.domain.Mem
 import java.util.*
 
 class MemDetailsActivity : AppCompatActivity() {
@@ -49,7 +50,7 @@ class MemDetailsActivity : AppCompatActivity() {
     private fun fillViews() {
         val mem = intent.getParcelableExtra<Mem>(MEM_KEY)!!
         memTitle.text = mem.title
-        memDesc.text = mem.description
+        memDesc.text = HtmlCompat.fromHtml(mem.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
         Glide.with(this)
             .load(mem.photoUrl)
             .placeholder(R.drawable.mem_placeholder)

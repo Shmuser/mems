@@ -1,6 +1,6 @@
 package ru.vladroid.projs.mems.views
 
-import ru.vladroid.projs.mems.network.Mem
+import ru.vladroid.projs.mems.domain.Mem
 
 interface MemesMainView {
 
@@ -10,7 +10,7 @@ interface MemesMainView {
 
     fun onMemesLoadingError()
 
-    fun setMemesListData(memes: ArrayList<Mem>)
+    fun setMemesListData(memes: List<Mem>)
 
     fun onReloadMemesList()
 

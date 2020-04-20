@@ -5,16 +5,15 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import ru.vladroid.projs.mems.R
+import ru.vladroid.projs.mems.domain.Mem
 import ru.vladroid.projs.mems.fragments.MemesListFragment
 import ru.vladroid.projs.mems.fragments.TestFragment
-import ru.vladroid.projs.mems.network.Mem
 import ru.vladroid.projs.mems.presenters.MemesMainPresenterImpl
+import ru.vladroid.projs.mems.utils.showSnackbar
 import ru.vladroid.projs.mems.views.MemesMainView
 
 class MemesMainActivity : AppCompatActivity(), MemesMainView {
@@ -23,22 +22,60 @@ class MemesMainActivity : AppCompatActivity(), MemesMainView {
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var initialLoadingView: FrameLayout
     private lateinit var errorMessage: TextView
-    private var snackbar: Snackbar? = null
     private val memesMainPresenter = MemesMainPresenterImpl()
     private val fragments: ArrayList<Fragment> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_memes_main)
-        memesMainPresenter.attachView(this)
+
+        initViews()
+        createFragments()
+        initPresenter()
+    }
+
+    override fun onDestroy() {
+        memesMainPresenter.detachView()
+        super.onDestroy()
+    }
+
+    override fun showInitialLoading() {
+        initialLoadingView.isVisible = true
+    }
+
+    override fun hideInitialLoading() {
+        initialLoadingView.isVisible = false
+    }
+
+    override fun onMemesLoadingError() {
+        errorMessage.isVisible = true
+        constraintLayout.showSnackbar(R.string.memes_error_snackbar_text)
+    }
+
+    override fun setMemesListData(memes: List<Mem>) {
+        val memesListFragment = fragments[0] as MemesListFragment
+        memesListFragment.setMemes(memes)
+    }
+
+    override fun onReloadMemesList() {
+        memesMainPresenter.reloadMemesList()
+    }
+
+    override fun hideReloadMemesListProgress() {
+        (fragments[0] as? MemesListFragment)?.closeRefreshProgress()
+    }
+
+    override fun onMemesReloadingError() {
+        (fragments[0] as? MemesListFragment)?.hideMemes()
+        onMemesLoadingError()
+    }
+
+    private fun initViews() {
         constraintLayout = findViewById(R.id.constraint_layout)
         bottomNavigationView = findViewById(R.id.bottom_nav_view)
         fragmentContainer = findViewById(R.id.fragment_container)
         initialLoadingView = findViewById(R.id.overlay_view)
         errorMessage = findViewById(R.id.memes_error_message)
-        createFragments()
-
-        memesMainPresenter.onFirstMemesLoading()
     }
 
     private fun createFragments() {
@@ -66,7 +103,7 @@ class MemesMainActivity : AppCompatActivity(), MemesMainView {
                 R.id.action_news -> {
                     hideErrorMessage()
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragments[0], memesListFragmentTag)
+                        .replace(R.id.fragment_container, fragments[0], MEMES_LIST_FRAGMENT_TAG)
                         .commit()
                     return@setOnNavigationItemSelectedListener true
                 }
@@ -89,60 +126,16 @@ class MemesMainActivity : AppCompatActivity(), MemesMainView {
         }
     }
 
-    override fun onDestroy() {
-        memesMainPresenter.detachView()
-        super.onDestroy()
-    }
-
-    override fun showInitialLoading() {
-        initialLoadingView.isVisible = true
-    }
-
-    override fun hideInitialLoading() {
-        initialLoadingView.isVisible = false
-    }
-
-    override fun onMemesLoadingError() {
-        errorMessage.isVisible = true
-        getErrorSnackbar().show()
-    }
-
-    override fun setMemesListData(memes: ArrayList<Mem>) {
-        val memesListFragment = fragments[0] as MemesListFragment
-        memesListFragment.setMemes(memes)
-    }
-
-    override fun onReloadMemesList() {
-        memesMainPresenter.reloadMemesList()
-    }
-
-    override fun hideReloadMemesListProgress() {
-        (fragments[0] as? MemesListFragment)?.closeRefreshProgress()
-    }
-
-    override fun onMemesReloadingError() {
-        (fragments[0] as? MemesListFragment)?.hideMemes()
-        onMemesLoadingError()
+    private fun initPresenter() {
+        memesMainPresenter.attachView(this)
+        memesMainPresenter.onFirstMemesLoading()
     }
 
     private fun hideErrorMessage() {
         errorMessage.isVisible = false
     }
 
-    private fun getErrorSnackbar(): Snackbar {
-        if (snackbar == null) {
-            snackbar = Snackbar.make(
-                constraintLayout,
-                R.string.memes_error_snackbar_text,
-                Snackbar.LENGTH_LONG
-            )
-                .setBackgroundTint(ContextCompat.getColor(this, R.color.colorError))
-                .setTextColor(ContextCompat.getColor(this, R.color.colorText))
-        }
-        return snackbar!!
-    }
-
     companion object {
-        private val memesListFragmentTag = "memes_list_fragment"
+        private val MEMES_LIST_FRAGMENT_TAG = "memes_list_fragment"
     }
 }

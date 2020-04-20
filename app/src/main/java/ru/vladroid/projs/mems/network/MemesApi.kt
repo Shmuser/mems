@@ -6,6 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import ru.vladroid.projs.mems.network.request.AuthRequest
 import ru.vladroid.projs.mems.network.response.AuthResponse
+import ru.vladroid.projs.mems.network.response.MemResponse
 
 
 interface MemesApi {
@@ -14,5 +15,5 @@ interface MemesApi {
     fun login(@Body authRequest: AuthRequest): Single<AuthResponse>
 
     @GET("memes")
-    fun getMemes(): Single<ArrayList<Mem>>
+    fun getMemes(): Single<List<MemResponse>>
 }

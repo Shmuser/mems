@@ -1,9 +1,7 @@
 package ru.vladroid.projs.mems.presenters
 
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import ru.vladroid.projs.mems.network.NetworkService
+import ru.vladroid.projs.mems.network.NetworkRepository
 import ru.vladroid.projs.mems.views.MemesMainView
 
 interface MemesMainPresenter {
@@ -21,6 +19,7 @@ interface MemesMainPresenter {
 class MemesMainPresenterImpl : MemesMainPresenter {
     private var memesMainView: MemesMainView? = null
     private val disposables = CompositeDisposable()
+    private val networkRepository = NetworkRepository()
 
     override fun attachView(memesMainView: MemesMainView) {
         this.memesMainView = memesMainView
@@ -34,31 +33,31 @@ class MemesMainPresenterImpl : MemesMainPresenter {
     override fun onFirstMemesLoading() {
         memesMainView?.showInitialLoading()
         disposables.add(
-            NetworkService.getApiInstance().getMemes()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    memesMainView?.hideInitialLoading()
-                    memesMainView?.setMemesListData(it)
-                }, {
-                    memesMainView?.hideInitialLoading()
-                    memesMainView?.onMemesLoadingError()
-                })
+            networkRepository.getMemes()
+                .subscribe { it ->
+                    if (it.isSuccess) {
+                        memesMainView?.hideInitialLoading()
+                        memesMainView?.setMemesListData(it.getOrNull()!!)
+                    } else {
+                        memesMainView?.hideInitialLoading()
+                        memesMainView?.onMemesLoadingError()
+                    }
+                }
         )
     }
 
     override fun reloadMemesList() {
         disposables.addAll(
-            NetworkService.getApiInstance().getMemes()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    memesMainView?.hideReloadMemesListProgress()
-                    memesMainView?.setMemesListData(it)
-                }, {
-                    memesMainView?.hideReloadMemesListProgress()
-                    memesMainView?.onMemesReloadingError()
-                })
+            networkRepository.getMemes()
+                .subscribe { it ->
+                    if (it.isSuccess) {
+                        memesMainView?.hideReloadMemesListProgress()
+                        memesMainView?.setMemesListData(it.getOrNull()!!)
+                    } else {
+                        memesMainView?.hideReloadMemesListProgress()
+                        memesMainView?.onMemesReloadingError()
+                    }
+                }
         )
     }
 }
