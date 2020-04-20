@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimaryDark">#23213F</color>
+    <color name="colorPrimary">#312F51</color>
+    <color name="colorAccent">#1EF0D7</color>
+    <color name="colorError">#FF575D</color>
+    <color name="colorBoxSecondary">#61FFFFFF</color>
+    <color name="colorText">#FFFFFF</color>
+    <color name="textBoxBackground">#0FFFFFFF</color>
+    <color name="progressBarColor">#1F2032</color>
 </resources>
