@@ -1,0 +1,20 @@
+package ru.vladroid.projs.mems.views
+
+import ru.vladroid.projs.mems.domain.Mem
+
+interface MemesMainView {
+
+    fun showInitialLoading()
+
+    fun hideInitialLoading()
+
+    fun onMemesLoadingError()
+
+    fun setMemesListData(memes: List<Mem>)
+
+    fun onReloadMemesList()
+
+    fun hideReloadMemesListProgress()
+
+    fun onMemesReloadingError()
+}
