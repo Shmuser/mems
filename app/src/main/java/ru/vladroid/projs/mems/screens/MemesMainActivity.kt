@@ -5,7 +5,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -100,25 +99,19 @@ class MemesMainActivity : AppCompatActivity(), MemesMainView {
 
     private fun configureBottomNavView() {
         bottomNavigationView.setOnNavigationItemSelectedListener {
+            hideErrorMessage()
             when (it.itemId) {
                 R.id.action_news -> {
-                    hideErrorMessage()
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragments[0], MEMES_LIST_FRAGMENT_TAG)
-                        .commit()
+                    showFragmentByIndex(0)
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.action_add -> {
-                    hideErrorMessage()
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragments[1]).commit()
+                    showFragmentByIndex(1)
                     return@setOnNavigationItemSelectedListener true
 
                 }
                 R.id.action_profile -> {
-                    hideErrorMessage()
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragments[2]).commit()
+                    showFragmentByIndex(2)
                     return@setOnNavigationItemSelectedListener true
 
                 }
@@ -136,7 +129,21 @@ class MemesMainActivity : AppCompatActivity(), MemesMainView {
         errorMessage.isVisible = false
     }
 
-    companion object {
-        private val MEMES_LIST_FRAGMENT_TAG = "memes_list_fragment"
+    private fun showFragmentByIndex(index: Int) {
+        val transaction = supportFragmentManager.beginTransaction()
+
+        for (i in 0 until fragments.size) {
+            if (i == index)
+                continue
+            if (fragments[i].isAdded && !fragments[i].isHidden)
+                transaction.hide(fragments[i])
+        }
+
+        if (fragments[index].isAdded)
+            transaction.show(fragments[index])
+        else
+            transaction.add(R.id.fragment_container, fragments[index])
+
+        transaction.commit()
     }
 }
